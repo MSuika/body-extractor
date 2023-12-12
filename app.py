@@ -63,5 +63,29 @@ if st.button('Extract Content'):
     for item in all_content:
         st.markdown(item, unsafe_allow_html=True)
 
+if st.button('Extract Content'):
+    all_content = []
+    for url in urls:
+        if url.strip():
+            content = extract_content_in_order(url)
+            if content:
+                all_content.append(f"URL: {url}\n")
+                all_content.extend(content)
+
+    combined_content = "\n".join(all_content)
+
+    # Check if there is content to download
+    if combined_content:
+        # Use Streamlit's download button to offer the text for download
+        st.download_button(
+            label="Download Extracted Content as TXT",
+            data=combined_content,
+            file_name="extracted_content.txt",
+            mime="text/plain"
+        )
+    # Display the content in the app (as you have already implemented)
+    for item in all_content:
+        st.markdown(item, unsafe_allow_html=True)
+
 st.sidebar.header("About the App")
 st.sidebar.text("This app extracts content in the order it appears on the web pages, including headings and paragraphs, from up to 6 URLs.")
