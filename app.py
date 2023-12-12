@@ -63,7 +63,7 @@ if st.button('Extract Content'):
     for item in all_content:
         st.markdown(item, unsafe_allow_html=True)
 
-if st.button('Extract Content', key='extract_content_button'):
+if st.button('Download (.txt)'):
     all_content = []
     for url in urls:
         if url.strip():
