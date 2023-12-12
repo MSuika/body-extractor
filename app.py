@@ -35,9 +35,18 @@ def extract_content_in_order(url):
 
     return content
 
+import streamlit as st
+import requests
+from bs4 import BeautifulSoup
+
+st.title('Webpage Content Extractinator')
+
+# [Your function definition remains the same]
+
 urls = st.text_area("Enter up to 6 URLs (separated by new lines):").split("\n")
 
-if st.button('Extract Content'):
+# Button for displaying content and copying to clipboard
+if st.button('Display Content'):
     all_content = []
     for url in urls:
         if url.strip():
@@ -47,23 +56,25 @@ if st.button('Extract Content'):
                 all_content.extend(content)
 
     combined_content = "\n".join(all_content)
-    copy_html = f"""
-        <textarea id="copyText" style="width:100%;height:200px;">{combined_content}</textarea>
-        <button onclick="copyToClipboard()">Copy to Clipboard</button>
-        <script>
-            function copyToClipboard() {{
-                var copyText = document.getElementById("copyText");
-                copyText.select();
-                document.execCommand("copy");
-            }}
-        </script>
-    """
-    st.components.v1.html(copy_html, height=250)
+    if combined_content:
+        copy_html = f"""
+            <textarea id="copyText" style="width:100%;height:200px;">{combined_content}</textarea>
+            <button onclick="copyToClipboard()">Copy to Clipboard</button>
+            <script>
+                function copyToClipboard() {{
+                    var copyText = document.getElementById("copyText");
+                    copyText.select();
+                    document.execCommand("copy");
+                }}
+            </script>
+        """
+        st.components.v1.html(copy_html, height=250)
 
-    for item in all_content:
-        st.markdown(item, unsafe_allow_html=True)
+        for item in all_content:
+            st.markdown(item, unsafe_allow_html=True)
 
-if st.button('Download (.txt)'):
+# Button for downloading content as a .txt file
+if st.button('Download Content as TXT', key='download_txt_button'):
     all_content = []
     for url in urls:
         if url.strip():
@@ -73,20 +84,13 @@ if st.button('Download (.txt)'):
                 all_content.extend(content)
 
     combined_content = "\n".join(all_content)
-
-    # Check if there is content to download
     if combined_content:
-        # Use Streamlit's download button to offer the text for download
         st.download_button(
             label="Download Extracted Content as TXT",
             data=combined_content,
             file_name="extracted_content.txt",
             mime="text/plain"
         )
-
-    # Display the content in the app (as you have already implemented)
-    for item in all_content:
-        st.markdown(item, unsafe_allow_html=True)
 
 st.sidebar.header("About the App")
 st.sidebar.text("This app extracts content in the order it appears on the web pages, including headings and paragraphs, from up to 6 URLs.")
