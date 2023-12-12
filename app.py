@@ -35,18 +35,9 @@ def extract_content_in_order(url):
 
     return content
 
-import streamlit as st
-import requests
-from bs4 import BeautifulSoup
-
-st.title('Webpage Content Extractinator')
-
-# [Your function definition remains the same]
-
 urls = st.text_area("Enter up to 6 URLs (separated by new lines):").split("\n")
 
-# Button for displaying content and copying to clipboard
-if st.button('Display Content'):
+if st.button('Extract Content'):
     all_content = []
     for url in urls:
         if url.strip():
@@ -70,21 +61,11 @@ if st.button('Display Content'):
         """
         st.components.v1.html(copy_html, height=250)
 
+        # Display the content
         for item in all_content:
             st.markdown(item, unsafe_allow_html=True)
 
-# Button for downloading content as a .txt file
-if st.button('Download Content as TXT', key='download_txt_button'):
-    all_content = []
-    for url in urls:
-        if url.strip():
-            content = extract_content_in_order(url)
-            if content:
-                all_content.append(f"URL: {url}\n")
-                all_content.extend(content)
-
-    combined_content = "\n".join(all_content)
-    if combined_content:
+        # Download button for the content as a .txt file
         st.download_button(
             label="Download Extracted Content as TXT",
             data=combined_content,
