@@ -61,17 +61,17 @@ if st.button('Extract Content'):
         """
         st.components.v1.html(copy_html, height=250)
 
-        # Display the content
-        for item in all_content:
-            st.markdown(item, unsafe_allow_html=True)
-
         # Download button for the content as a .txt file
         st.download_button(
-            label="Download Extracted Content as TXT",
+            label="Download (.txt)",
             data=combined_content,
             file_name="extracted_content.txt",
             mime="text/plain"
         )
+
+        # Display the content
+        for item in all_content:
+            st.markdown(item, unsafe_allow_html=True)
 
 st.sidebar.header("About the App")
 st.sidebar.text("This app extracts content in the order it appears on the web pages, including headings and paragraphs, from up to 6 URLs.")
