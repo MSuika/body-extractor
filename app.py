@@ -10,7 +10,7 @@ def extract_content_in_order(url):
         "Accept-Language": "en-US,en;q=0.9",
         "Connection": "keep-alive",
     }
-    
+
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -25,13 +25,20 @@ def extract_content_in_order(url):
         return []
 
     soup = BeautifulSoup(response.content, 'html.parser')
-    
     content = []
-    for element in soup.find('body').find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']):
+
+    for element in soup.find('body').find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a']):
         tag = element.name
-        text = element.text.strip()
-        if text:  # Exclude empty elements
-            content.append(f"<{tag}>{text}</{tag}>")
+        if tag == 'a':
+            href = element.get('href', '').strip()
+            text = element.get_text(strip=True)
+            if href and text:
+                # Add anchor as a clickable link
+                content.append(f'<a href="{href}">{text}</a>')
+        else:
+            text = element.get_text(strip=True)
+            if text:
+                content.append(f"<{tag}>{text}</{tag}>")
 
     return content
 
@@ -43,7 +50,7 @@ if st.button('Extract Content'):
         if url.strip():
             content = extract_content_in_order(url)
             if content:
-                all_content.append(f"URL: {url}\n")  # Present URL as plain text
+                all_content.append(f"URL: {url}\n")
                 all_content.extend(content)
 
     combined_content = "\n".join(all_content)
@@ -61,7 +68,6 @@ if st.button('Extract Content'):
         """
         st.components.v1.html(copy_html, height=250)
 
-        # Download button for the content as a .txt file
         st.download_button(
             label="Download (.txt)",
             data=combined_content,
@@ -69,9 +75,8 @@ if st.button('Extract Content'):
             mime="text/plain"
         )
 
-        # Display the content
         for item in all_content:
             st.markdown(item, unsafe_allow_html=True)
 
 st.sidebar.header("About the App")
-st.sidebar.text("This app extracts content in the order it appears on the web pages, including headings and paragraphs, from up to 6 URLs.")
+st.sidebar.text("This app extracts content in the order it appears on the web pages, including headings, paragraphs, and links from up to 6 URLs.")
